@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from django.db.models import Avg
 
 from reviews.models import Comment, Review, Category, Genre, Title, TitleGenre
 
@@ -40,6 +41,13 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'author', 'score', 'pub_date')
         model = Review
 
+    def validate(self, data):
+        user = self.context.get('request').user
+        title = Title.objects.get(id=data.get('title_id'))
+        if Review.objects.filter(title=title).filter(author=user).exists():
+            raise serializers.ValidationError()
+        return data
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
@@ -72,8 +80,9 @@ class TitleSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
 
-    def get_rating(x, y):
-        ...
+    def get_rating(self, obj):
+        rating = Review.objects.filter(title=obj).aggregate(Avg('score'))
+        return int(rating)
 
     class Meta:
         model = Title
@@ -97,8 +106,9 @@ class TitlePostSerializer(serializers.ModelSerializer):
         slug_field='slug', queryset=Category.objects.all()
     )
 
-    def get_rating(x, y):
-        ...
+    def get_rating(self, obj):  # возможно лишняя
+        rating = Review.objects.filter(title=obj).aggregate(Avg('score'))
+        return int(rating)
 
     class Meta:
         model = Title
