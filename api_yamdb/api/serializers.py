@@ -106,7 +106,7 @@ class TitlePostSerializer(serializers.ModelSerializer):
         slug_field='slug', queryset=Category.objects.all()
     )
 
-    def get_rating(self, obj):
+    def get_rating(self, obj):  # возможно лишняя
         rating = Review.objects.filter(title=obj).aggregate(Avg('score'))
         return int(rating)
 
