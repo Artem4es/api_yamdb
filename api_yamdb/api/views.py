@@ -7,13 +7,23 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly
+)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework import filters, viewsets, status, views
 
 from reviews.models import Review, Title, Category, Genre, Title
 
-
+from .permissions import (
+    AdminOrReadOnly,
+    AuthorAdminModeratorPermission,
+    IsAdmin,
+    IsSuperUser
+)
 from api.serializers import (
     CategorySerializer,
     GenreSerializer,
@@ -41,6 +51,7 @@ class CategoryViewSet(CreateReadDeleteModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
+    permission_classes = [AdminOrReadOnly, ]
 
 
 class GenreViewSet(CreateReadDeleteModelViewSet):
@@ -49,6 +60,7 @@ class GenreViewSet(CreateReadDeleteModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
+    permission_classes = [AdminOrReadOnly, ]
 
 
 class TitleViewSet(CreateReadUpdateDeleteModelViewset):
@@ -56,6 +68,7 @@ class TitleViewSet(CreateReadUpdateDeleteModelViewset):
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
+    permission_classes = [AdminOrReadOnly, ]
 
     def get_serializer_class(self):
         if self.action in ('create', 'patch'):
@@ -64,6 +77,8 @@ class TitleViewSet(CreateReadUpdateDeleteModelViewset):
 
 
 class SignUpView(views.APIView):
+    permission_classes = [AllowAny, ]
+
     def post(self, request):
         serializer = UserSignUpSerializer(data=request.data)
         if serializer.is_valid():
@@ -82,6 +97,8 @@ class SignUpView(views.APIView):
 
 
 class TokenView(views.APIView):
+    permission_classes = [AllowAny, ]
+
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
         if serializer.is_valid():
@@ -108,6 +125,10 @@ class TokenView(views.APIView):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
+    permission_classes = [
+        AuthorAdminModeratorPermission,
+        IsAuthenticatedOrReadOnly,
+    ]
 
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
@@ -120,6 +141,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
+    permission_classes = [
+        AuthorAdminModeratorPermission,
+        IsAuthenticatedOrReadOnly,
+    ]
 
     def get_queryset(self):
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
