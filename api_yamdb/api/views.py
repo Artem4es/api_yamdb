@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 
+from rest_framework.decorators import action
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -33,6 +34,7 @@ from api.serializers import (
     ReviewSerializer,
     UserSignUpSerializer,
     UserSerializer,
+    UserIsMeSerializer,
     TokenSerializer,
 )
 
@@ -158,4 +160,27 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UsersViewSet(viewsets.ModelViewSet):
-    ...
+    permission_classes = (IsAdmin | IsSuperUser)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'username'
+    search_field = ('username',)
+
+    @action(
+        methods=['GET', 'PATCH'],
+        detail=True,
+        url_path='me',
+        permission_classes=[IsAuthenticated, ]
+    )
+    def user_is_me(self, request):
+        user = request.user
+        if request.method == 'GET':
+            return Response(
+                UserSerializer(user).data,
+                status=status.HTTP_200_OK
+            )
+        serializer = UserIsMeSerializer(user, request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
