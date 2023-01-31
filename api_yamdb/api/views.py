@@ -1,4 +1,6 @@
 from django.conf import settings
+from django import views
+from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -6,20 +8,62 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 
 from rest_framework.response import Response
-from rest_framework import status, views, viewsets
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework import filters, viewsets, status, views
 
-from reviews.models import Review, Title
+from reviews.models import Review, Title, Category, Genre, Title
 
-from .serializers import CommentSerializer, ReviewSerializer
-from .serializers import UserSignUpSerializer, TokenSerializer
+
+from api.serializers import (
+    CategorySerializer,
+    GenreSerializer,
+    TitleSerializer,
+    TitlePostSerializer,
+    CommentSerializer,
+    ReviewSerializer,
+    UserSignUpSerializer,
+    TokenSerializer,
+)
+
+
+from api.custom_viewsets import (
+    CreateReadDeleteModelViewSet,
+    CreateReadUpdateDeleteModelViewset,
+)
 
 
 User = get_user_model()
 
 
-class SignUpView(views.APIView):
+class CategoryViewSet(CreateReadDeleteModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
 
+
+class GenreViewSet(CreateReadDeleteModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class TitleViewSet(CreateReadUpdateDeleteModelViewset):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
+
+    def get_serializer_class(self):
+        if self.action in ('create', 'patch'):
+            return TitlePostSerializer
+        return TitleSerializer
+
+
+class SignUpView(views.APIView):
     def post(self, request):
         serializer = UserSignUpSerializer(data=request.data)
         if serializer.is_valid():
@@ -38,7 +82,6 @@ class SignUpView(views.APIView):
 
 
 class TokenView(views.APIView):
-
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
         if serializer.is_valid():
@@ -48,20 +91,17 @@ class TokenView(views.APIView):
             except Http404:
                 return Response(
                     'Пользователь с таким username не найдено',
-                    status=status.HTTP_404_NOT_FOUND
+                    status=status.HTTP_404_NOT_FOUND,
                 )
             if default_token_generator.check_token(
-                    user, serializer.validated_data['confirmation_code']
+                user, serializer.validated_data['confirmation_code']
             ):
                 token = str(AccessToken.for_user(user))
-                user_data = {
-                    'username': user.username,
-                    'token': token
-                }
+                user_data = {'username': user.username, 'token': token}
                 return Response(user_data, status=status.HTTP_200_OK)
             return Response(
                 'Указан неверный код подтверждения',
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
