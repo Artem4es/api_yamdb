@@ -14,6 +14,7 @@ from api.views import (
 
 v1_router = DefaultRouter()
 # router.register('users', UsersViewSet, basename='users')
+
 v1_router.register(r'categories', CategoryViewSet)
 v1_router.register(r'genres', GenreViewSet)
 v1_router.register(r'titles', TitleViewSet)
@@ -25,6 +26,7 @@ v1_router.register(
     CommentViewSet,
     basename='comments',
 )
+
 app_name = 'api'
 
 auth_patterns = [
