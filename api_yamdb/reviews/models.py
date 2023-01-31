@@ -77,7 +77,7 @@ class TitleGenre(models.Model):
 
 class Review(models.Model):
     title = models.ForeignKey(
-        1, on_delete=models.CASCADE, unique=True, related_name='reviews'
+        Title, on_delete=models.CASCADE, unique=True, related_name='reviews'
     )
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews'
@@ -96,7 +96,7 @@ class Comment(models.Model):
         Review, on_delete=models.CASCADE, related_name='comments'
     )
     author = models.ForeignKey(
-        1, on_delete=models.CASCADE, related_name='comments'
+        User, on_delete=models.CASCADE, related_name='comments'
     )
     text = models.TextField()
     pub_date = models.DateTimeField(
