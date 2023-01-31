@@ -6,7 +6,6 @@ from django.core.validators import (
     MinValueValidator,
 )
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth import get_user_model
 from django.db import models
 
 
