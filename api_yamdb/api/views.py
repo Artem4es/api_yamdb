@@ -39,6 +39,6 @@ class TitleViewSet(CreateReadUpdateDeleteModelViewset):
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action in ('create', 'patch'):
             return TitlePostSerializer
         return TitleSerializer
