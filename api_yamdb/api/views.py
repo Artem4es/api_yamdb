@@ -1,20 +1,19 @@
-from django import views
-from django.shortcuts import render
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 
 from rest_framework.response import Response
 from rest_framework import status, views, viewsets
 from rest_framework_simplejwt.tokens import AccessToken
-from django.contrib.auth.tokens import default_token_generator
 
 from reviews.models import Review, Title
 
 from .serializers import CommentSerializer, ReviewSerializer
 from .serializers import UserSignUpSerializer, TokenSerializer
 
-# Create your views here.
 
 User = get_user_model()
 
@@ -28,7 +27,12 @@ class SignUpView(views.APIView):
             user = User.objects.get(username=serializer.data['username'])
             confirmation_code = default_token_generator.make_token(user)
             print(confirmation_code)
-            # тут будем письмо отсылать
+            send_mail(
+                subject='Код подтверждения',
+                message=f'Ваш код: {confirmation_code}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email, ]
+            )
             return Response(serializer.data, status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
