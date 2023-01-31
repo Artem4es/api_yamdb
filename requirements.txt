@@ -21,6 +21,7 @@ PyJWT==2.1.0
 pytest==6.2.4
 pytest-django==4.4.0
 pytest-pythonpath==0.7.3
+djangorestframework-simplejwt==5.2.2
 pytz==2022.7.1
 requests==2.26.0
 sqlparse==0.4.3
