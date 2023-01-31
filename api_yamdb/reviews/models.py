@@ -5,11 +5,48 @@ from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
 )
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 from django.db import models
 
 
-User = get_user_model()
+class User(AbstractUser):
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
+    USER_ROLES = [
+        (USER, 'user'),
+        (MODERATOR, 'moderator'),
+        (ADMIN, 'admin'),
+    ]
+    email = models.EmailField(
+        max_length=100,
+        unique=True,
+        verbose_name='Email'
+    )
+    bio = models.TextField(
+        max_length=254,
+        verbose_name='Биография',
+        blank=True
+    )
+    role = models.CharField(
+        max_length=10,
+        choices=USER_ROLES,
+        default=USER,
+        verbose_name='Роль'
+    )
+
+    @property
+    def is_user(self):
+        return self.role == User.USER
+
+    @property
+    def is_moderator(self):
+        return self.role == User.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == User.ADMIN
 
 
 class Category(models.Model):
