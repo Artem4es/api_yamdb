@@ -11,7 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
-    IsAuthenticatedOrReadOnly
+    IsAuthenticatedOrReadOnly,
 )
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -23,7 +23,7 @@ from .permissions import (
     AdminOrReadOnly,
     AuthorAdminModeratorPermission,
     IsAdmin,
-    IsSuperUser
+    IsSuperUser,
 )
 from api.serializers import (
     CategorySerializer,
@@ -54,7 +54,9 @@ class CategoryViewSet(CreateReadDeleteModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = [AdminOrReadOnly, ]
+    permission_classes = [
+        AdminOrReadOnly,
+    ]
 
 
 class GenreViewSet(CreateReadDeleteModelViewSet):
@@ -63,7 +65,9 @@ class GenreViewSet(CreateReadDeleteModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = [AdminOrReadOnly, ]
+    permission_classes = [
+        AdminOrReadOnly,
+    ]
 
 
 class TitleViewSet(CreateReadUpdateDeleteModelViewset):
@@ -71,7 +75,9 @@ class TitleViewSet(CreateReadUpdateDeleteModelViewset):
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
-    permission_classes = [AdminOrReadOnly, ]
+    permission_classes = [
+        AdminOrReadOnly,
+    ]
 
     def get_serializer_class(self):
         if self.action in ('create', 'patch'):
@@ -80,7 +86,9 @@ class TitleViewSet(CreateReadUpdateDeleteModelViewset):
 
 
 class SignUpView(views.APIView):
-    permission_classes = [AllowAny, ]
+    permission_classes = [
+        AllowAny,
+    ]
 
     def post(self, request):
         serializer = UserSignUpSerializer(data=request.data)
@@ -89,25 +97,27 @@ class SignUpView(views.APIView):
         email = serializer.validated_data.get('email')
         try:
             user, _ = User.objects.get_or_create(
-                username=username,
-                email=email
+                username=username, email=email
             )
         except IntegrityError:
-            return Response('Это имя или email уже занято',
-                            status.HTTP_400_BAD_REQUEST)
+            return Response(
+                'Это имя или email уже занято', status.HTTP_400_BAD_REQUEST
+            )
         user.confirmation_code = default_token_generator.make_token(user)
         user.save()
         send_mail(
             subject='Код подтверждения',
             message=f'Ваш код: {user.confirmation_code}',
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email]
+            recipient_list=[user.email],
         )
         return Response(serializer.validated_data, status.HTTP_200_OK)
 
 
 class TokenView(views.APIView):
-    permission_classes = [AllowAny, ]
+    permission_classes = [
+        AllowAny,
+    ]
 
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
@@ -118,17 +128,14 @@ class TokenView(views.APIView):
         if user.confirmation_code != confirmation_code:
             return Response(
                 {
-                    "confirmation_code": ("Неверный код доступа "
-                                          f"{confirmation_code}")
+                    "confirmation_code": (
+                        "Неверный код доступа " f"{confirmation_code}"
+                    )
                 },
-                status.HTTP_400_BAD_REQUEST
+                status.HTTP_400_BAD_REQUEST,
             )
         return Response(
-            {
-                "token": str(
-                    RefreshToken.for_user(user).access_token
-                )
-            }
+            {"token": str(RefreshToken.for_user(user).access_token)}
         )
 
 
@@ -166,27 +173,34 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UsersViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdmin | IsSuperUser, ]
+    permission_classes = [
+        IsAdmin | IsSuperUser,
+    ]
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
-    filter_backends = [filters.SearchFilter, ]
+    filter_backends = [
+        filters.SearchFilter,
+    ]
     search_fields = ('=username',)
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
         methods=['PATCH', 'GET'],
         detail=False,
-        permission_classes=[IsAuthenticated, ],
+        permission_classes=[
+            IsAuthenticated,
+        ],
         url_path='me',
-        url_name='me'
+        url_name='me',
     )
     def me(self, request):
         instance = self.request.user
         serializer = self.get_serializer(instance)
         if self.request.method == 'PATCH':
             serializer = self.get_serializer(
-                instance, data=request.data, partial=True)
+                instance, data=request.data, partial=True
+            )
             serializer.is_valid(raise_exception=True)
             serializer.save(role=self.request.user.role)
             return Response(serializer.data, status=status.HTTP_200_OK)

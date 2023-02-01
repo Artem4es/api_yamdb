@@ -54,9 +54,7 @@ class User(AbstractUser):
         verbose_name='Роль',
     )
     confirmation_code = models.CharField(
-        max_length=50,
-        blank=True,
-        verbose_name='Код авторизации'
+        max_length=50, blank=True, verbose_name='Код авторизации'
     )
 
     class Meta:
@@ -64,8 +62,7 @@ class User(AbstractUser):
         verbose_name_plural = "Пользователи"
         constraints = [
             models.UniqueConstraint(
-                fields=['username', 'email'],
-                name='unique_username_email'
+                fields=['username', 'email'], name='unique_username_email'
             )
         ]
 
