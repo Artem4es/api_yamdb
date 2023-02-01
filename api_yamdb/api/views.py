@@ -168,25 +168,18 @@ class UsersViewSet(viewsets.ModelViewSet):
     search_field = ('username',)
 
     @action(
-        methods=['GET', 'PATCH'],
-        detail=True,
+        methods=['PATCH', 'GET'],
+        detail=False,
+        permission_classes=[IsAuthenticated, ],
         url_path='me',
-        permission_classes=[IsAuthenticated, ]
+        url_name='me'
     )
-    def current_user_info(self, request):
-        serializer = UserSerializer(request.user)
-        if request.method == 'PATCH':
-            if request.user.is_admin:
-                serializer = UserSerializer(
-                    request.user,
-                    data=request.data,
-                    partial=True)
-            else:
-                serializer = UserIsMeSerializer(
-                    request.user,
-                    data=request.data,
-                    partial=True)
+    def me(self, request):
+        instance = self.request.user
+        serializer = self.get_serializer(instance)
+        if self.request.method == 'PATCH':
+            serializer = self.get_serializer(
+                instance, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer.save(role=self.request.user.role)
         return Response(serializer.data)
