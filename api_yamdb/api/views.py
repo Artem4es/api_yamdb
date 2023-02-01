@@ -105,21 +105,12 @@ class TokenView(views.APIView):
         username = serializer.validated_data.get('username')
         confirmation_code = serializer.validated_data['confirmation_code']
         user = get_object_or_404(User, username=username)
-        if user.confirmation_code != confirmation_code:
-            return Response(
-                {
-                    "confirmation_code": ("Неверный код доступа "
-                                          f"{confirmation_code}")
-                },
-                status.HTTP_400_BAD_REQUEST
-            )
-        return Response(
-            {
-                "token": str(
-                    RefreshToken.for_user(user).access_token
-                )
-            }
-        )
+        if default_token_generator.check_token(
+                user, serializer.validated_data['confirmation_code']
+        ):
+            token = RefreshToken.for_user(user)
+            return Response({'token': str(token)}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
