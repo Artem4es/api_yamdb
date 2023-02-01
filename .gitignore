@@ -148,7 +148,4 @@ dmypy.json
 # папки со статикой и медиа
 media/
 
-Миграции
-
-api_yamdb/reviews/migrations/
 
