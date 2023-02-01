@@ -28,36 +28,30 @@ class User(AbstractUser):
         max_length=150,
         unique=True,
         blank=False,
-        null=False
+        null=False,
     )
     first_name = models.CharField(
-        verbose_name='имя',
-        max_length=150,
-        blank=True
+        verbose_name='имя', max_length=150, blank=True
     )
     last_name = models.CharField(
-        verbose_name='фамилия',
-        max_length=150,
-        blank=True
+        verbose_name='фамилия', max_length=150, blank=True
     )
     email = models.EmailField(
         max_length=254,
         unique=True,
         blank=False,
         null=False,
-        verbose_name='Email'
+        verbose_name='Email',
     )
     bio = models.TextField(
-        max_length=254,
-        verbose_name='Биография',
-        blank=True
+        max_length=254, verbose_name='Биография', blank=True
     )
     role = models.CharField(
         max_length=20,
         choices=USER_ROLES,
         default=USER,
         blank=True,
-        verbose_name='Роль'
+        verbose_name='Роль',
     )
 
     @property
@@ -117,7 +111,9 @@ class Title(models.Model):
         verbose_name='Год выпуска',
         validators=[MaxValueValidator(datetime.datetime.now().year)],
     )
-    description = models.TextField(verbose_name='Описание', blank=True)
+    description = models.TextField(
+        verbose_name='Описание', blank=True, null=True
+    )
     genre = models.ManyToManyField(Genre, through='TitleGenre')
     category = models.ForeignKey(
         Category,
