@@ -27,9 +27,15 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
+class UserIsMeSerializer(UserSerializer):
+
+    class Meta(UserSerializer.Meta):
+        read_only_fields = ('role', )
+
+
 class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=30)
-    confirmation_code = serializers.CharField(max_length=100)
+    username = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)
 
 
 class ReviewSerializer(serializers.ModelSerializer):

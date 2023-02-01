@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 
+from rest_framework.decorators import action
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -32,6 +33,8 @@ from api.serializers import (
     CommentSerializer,
     ReviewSerializer,
     UserSignUpSerializer,
+    UserSerializer,
+    UserIsMeSerializer,
     TokenSerializer,
 )
 
@@ -154,3 +157,29 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
         serializer.save(author=self.request.user, review=review)
+
+
+class UsersViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdmin | IsSuperUser, ]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'username'
+    filter_backends = [filters.SearchFilter, ]
+    search_field = ('username',)
+
+    @action(
+        methods=['PATCH', 'GET'],
+        detail=False,
+        permission_classes=[IsAuthenticated, ],
+        url_path='me',
+        url_name='me'
+    )
+    def me(self, request):
+        instance = self.request.user
+        serializer = self.get_serializer(instance)
+        if self.request.method == 'PATCH':
+            serializer = self.get_serializer(
+                instance, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(role=self.request.user.role)
+        return Response(serializer.data)
