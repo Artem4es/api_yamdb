@@ -88,7 +88,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def get_rating(self, obj):
         rating = Review.objects.filter(title=obj).aggregate(Avg('score'))
-        return int(rating)
+        return rating['score__avg']
 
     class Meta:
         model = Title
@@ -114,7 +114,7 @@ class TitlePostSerializer(serializers.ModelSerializer):
 
     def get_rating(self, obj):  # возможно лишняя
         rating = Review.objects.filter(title=obj).aggregate(Avg('score'))
-        return int(rating)
+        return rating['score__avg']
 
     class Meta:
         model = Title
