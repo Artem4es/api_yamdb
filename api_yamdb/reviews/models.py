@@ -58,6 +58,7 @@ class User(AbstractUser):
     )
 
     class Meta:
+        ordering = ('id',)
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
         constraints = [
@@ -97,6 +98,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Genre(models.Model):
     name = models.CharField(
@@ -112,6 +116,9 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['-id']
 
 
 class Title(models.Model):
@@ -138,6 +145,9 @@ class Title(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['-name']
+
 
 class TitleGenre(models.Model):
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
@@ -163,6 +173,7 @@ class Review(models.Model):
     )
 
     class Meta:
+        ordering = ['-pub_date']
         constraints = [
             models.UniqueConstraint(fields=('title', 'author'),
                                     name='unique_review')
@@ -180,3 +191,7 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True
     )
+
+    class Meta:
+        ordering = ['-pub_date']
+
