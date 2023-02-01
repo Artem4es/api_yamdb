@@ -34,8 +34,8 @@ class UserIsMeSerializer(UserSerializer):
 
 
 class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=30)
-    confirmation_code = serializers.CharField(max_length=100)
+    username = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)
 
 
 class ReviewSerializer(serializers.ModelSerializer):

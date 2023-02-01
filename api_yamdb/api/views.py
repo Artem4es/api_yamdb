@@ -160,10 +160,11 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UsersViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAdmin | IsSuperUser)
+    permission_classes = [IsAdmin | IsSuperUser, ]
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+    filter_backends = [filters.SearchFilter, ]
     search_field = ('username',)
 
     @action(
@@ -172,7 +173,7 @@ class UsersViewSet(viewsets.ModelViewSet):
         url_path='me',
         permission_classes=[IsAuthenticated, ]
     )
-    def user_is_me(self, request):
+    def current_user_info(self, request):
         user = request.user
         if request.method == 'GET':
             return Response(
@@ -183,4 +184,3 @@ class UsersViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-
