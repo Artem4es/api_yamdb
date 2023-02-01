@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import BadRequest
 
 from rest_framework.decorators import action
 from rest_framework.permissions import (
@@ -144,8 +145,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         user = self.request.user
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         if Review.objects.filter(title=title).filter(author=user).exists():
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+            raise BadRequest('Второй раз отзыв отправлять нельзя!')
         serializer.save(author=user, title=title)
 
 
