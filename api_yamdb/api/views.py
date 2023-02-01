@@ -174,13 +174,19 @@ class UsersViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated, ]
     )
     def current_user_info(self, request):
-        user = request.user
-        if request.method == 'GET':
-            return Response(
-                UserSerializer(user).data,
-                status=status.HTTP_200_OK
-            )
-        serializer = UserIsMeSerializer(user, request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = UserSerializer(request.user)
+        if request.method == 'PATCH':
+            if request.user.is_admin:
+                serializer = UserSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            else:
+                serializer = UserIsMeSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
