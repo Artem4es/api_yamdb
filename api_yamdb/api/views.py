@@ -1,6 +1,5 @@
 from django.conf import settings
 from django import views
-from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
@@ -85,21 +84,12 @@ class SignUpView(views.APIView):
     def post(self, request):
         serializer = UserSignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        username = serializer.validated_data.get('username')
-        email = serializer.validated_data.get('email')
-        try:
-            user, _ = User.objects.get_or_create(
-                username=username,
-                email=email
-            )
-        except IntegrityError:
-            return Response('Это имя или email уже занято',
-                            status.HTTP_400_BAD_REQUEST)
-        user.confirmation_code = default_token_generator.make_token(user)
+        user, _ = User.objects.get_or_create(**serializer.data)
+        confirmation_code = default_token_generator.make_token(user)
         user.save()
         send_mail(
             subject='Код подтверждения',
-            message=f'Ваш код: {user.confirmation_code}',
+            message=f'Ваш код: {confirmation_code}',
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email]
         )
