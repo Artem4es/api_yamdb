@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db.models import Avg
 
-from reviews.models import Comment, Review, Category, Genre, Title, TitleGenre
+from reviews.models import Comment, Review, Category, Genre, Title
 
 
 User = get_user_model()

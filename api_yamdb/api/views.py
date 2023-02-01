@@ -1,50 +1,29 @@
-from django.conf import settings
+from api.custom_viewsets import (CreateReadDeleteModelViewSet,
+                                 CreateReadUpdateDeleteModelViewset)
+from api.serializers import (CategorySerializer, CommentSerializer,
+                             GenreSerializer, ReviewSerializer,
+                             TitlePostSerializer, TitleSerializer,
+                             TokenSerializer, UserSerializer,
+                             UserSignUpSerializer)
 from django import views
-from django_filters.rest_framework import DjangoFilterBackend
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import BadRequest
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from django.core.exceptions import BadRequest
-
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, views, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (
-    AllowAny,
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework import filters, viewsets, status, views
-
-from reviews.models import Review, Title, Category, Genre, Title
+from reviews.models import Category, Genre, Review, Title
 
 from .filters import TitleFilter
-from .permissions import (
-    AdminOrReadOnly,
-    AuthorAdminModeratorPermission,
-    IsAdmin,
-    IsSuperUser,
-)
-from api.serializers import (
-    CategorySerializer,
-    GenreSerializer,
-    TitleSerializer,
-    TitlePostSerializer,
-    CommentSerializer,
-    ReviewSerializer,
-    UserSignUpSerializer,
-    UserSerializer,
-    UserIsMeSerializer,
-    TokenSerializer,
-)
-
-
-from api.custom_viewsets import (
-    CreateReadDeleteModelViewSet,
-    CreateReadUpdateDeleteModelViewset,
-)
-
+from .permissions import (AdminOrReadOnly, AuthorAdminModeratorPermission,
+                          IsAdmin, IsSuperUser)
 
 User = get_user_model()
 
@@ -79,7 +58,6 @@ class TitleViewSet(CreateReadUpdateDeleteModelViewset):
     permission_classes = [
         AdminOrReadOnly,
     ]
-
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
@@ -116,7 +94,7 @@ class TokenView(views.APIView):
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
-        confirmation_code = serializer.validated_data['confirmation_code']
+        # confirmation_code = serializer.validated_data['confirmation_code']
         user = get_object_or_404(User, username=username)
         if default_token_generator.check_token(
                 user, serializer.validated_data['confirmation_code']
