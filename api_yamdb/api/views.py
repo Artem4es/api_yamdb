@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from django.http import Http404
 
 from rest_framework.decorators import action
 from rest_framework.permissions import (
@@ -14,7 +13,7 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly
 )
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import filters, viewsets, status, views
 
 from reviews.models import Review, Title, Category, Genre, Title
@@ -84,19 +83,17 @@ class SignUpView(views.APIView):
 
     def post(self, request):
         serializer = UserSignUpSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            user = User.objects.get(username=serializer.data['username'])
-            confirmation_code = default_token_generator.make_token(user)
-            print(confirmation_code)
-            send_mail(
-                subject='Код подтверждения',
-                message=f'Ваш код: {confirmation_code}',
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email, ]
-            )
-            return Response(serializer.data, status.HTTP_200_OK)
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        user, _ = User.objects.get_or_create(**serializer.data)
+        confirmation_code = default_token_generator.make_token(user)
+        user.save()
+        send_mail(
+            subject='Код подтверждения',
+            message=f'Ваш код: {confirmation_code}',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email]
+        )
+        return Response(serializer.validated_data, status.HTTP_200_OK)
 
 
 class TokenView(views.APIView):
@@ -104,26 +101,25 @@ class TokenView(views.APIView):
 
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
-        if serializer.is_valid():
-            username = serializer.validated_data['username']
-            try:
-                user = get_object_or_404(User, username=username)
-            except Http404:
-                return Response(
-                    'Пользователь с таким username не найдено',
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-            if default_token_generator.check_token(
-                user, serializer.validated_data['confirmation_code']
-            ):
-                token = str(AccessToken.for_user(user))
-                user_data = {'username': user.username, 'token': token}
-                return Response(user_data, status=status.HTTP_200_OK)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data.get('username')
+        confirmation_code = serializer.validated_data['confirmation_code']
+        user = get_object_or_404(User, username=username)
+        if user.confirmation_code != confirmation_code:
             return Response(
-                'Указан неверный код подтверждения',
-                status=status.HTTP_400_BAD_REQUEST,
+                {
+                    "confirmation_code": ("Неверный код доступа "
+                                          f"{confirmation_code}")
+                },
+                status.HTTP_400_BAD_REQUEST
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "token": str(
+                    RefreshToken.for_user(user).access_token
+                )
+            }
+        )
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -168,7 +164,8 @@ class UsersViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     lookup_field = 'username'
     filter_backends = [filters.SearchFilter, ]
-    search_field = ('username',)
+    search_fields = ('=username',)
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
         methods=['PATCH', 'GET'],
@@ -185,4 +182,5 @@ class UsersViewSet(viewsets.ModelViewSet):
                 instance, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save(role=self.request.user.role)
-        return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
