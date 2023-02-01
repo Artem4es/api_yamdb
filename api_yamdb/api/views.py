@@ -19,6 +19,7 @@ from rest_framework import filters, viewsets, status, views
 
 from reviews.models import Review, Title, Category, Genre, Title
 
+from .filters import TitleFilter
 from .permissions import (
     AdminOrReadOnly,
     AuthorAdminModeratorPermission,
@@ -74,13 +75,14 @@ class TitleViewSet(CreateReadUpdateDeleteModelViewset):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
+    filterset_class = TitleFilter
     permission_classes = [
         AdminOrReadOnly,
     ]
 
+
     def get_serializer_class(self):
-        if self.action in ('create', 'patch'):
+        if self.action in ('create', 'partial_update'):
             return TitlePostSerializer
         return TitleSerializer
 
