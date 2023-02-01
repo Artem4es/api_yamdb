@@ -84,13 +84,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'author', 'score', 'pub_date')
         model = Review
 
-    def validate(self, data):
-        user = self.context.get('request').user
-        title = Title.objects.get(id=data.get('title_id'))
-        if Review.objects.filter(title=title).filter(author=user).exists():
-            raise serializers.ValidationError()
-        return data
-
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
