@@ -177,7 +177,7 @@ class TitleGenre(models.Model):
     class Meta:
         verbose_name = 'Произведение/жанр'
         verbose_name_plural = 'Произведения/жанры'
-        ordering = ('-name',)        
+        ordering = ('-name',)
 
 
 class Review(models.Model):
