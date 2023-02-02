@@ -2,10 +2,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db.models import Avg
 from rest_framework import serializers
 
-from reviews.models import Comment, Review, Category, Genre, Title
-
-
-from reviews.models import User
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 class UserSignUpSerializer(serializers.Serializer):
@@ -121,15 +118,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = (
-            'id',
-            'name',
-            'year',
-            'rating',
-            'description',
-            'genre',
-            'category',
-        )
+        fields = '__all__'
 
 
 class TitlePostSerializer(serializers.ModelSerializer):
@@ -147,12 +136,4 @@ class TitlePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = (
-            'id',
-            'name',
-            'year',
-            'rating',
-            'description',
-            'genre',
-            'category',
-        )
+        fields = '__all__'

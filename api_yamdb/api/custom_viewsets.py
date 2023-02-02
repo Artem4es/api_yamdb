@@ -25,9 +25,3 @@ class CreateReadUpdateDeleteModelViewset(
 ):
     """Get insatnces or instance, create, update, delete"""
 
-    http_method_names = [
-        "get",
-        "post",
-        "patch",
-        "delete",
-    ]
