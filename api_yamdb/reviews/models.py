@@ -142,8 +142,9 @@ class Title(models.Model):
         blank=False,
     )
     pub_date = models.DateTimeField(
-        'Дата добавления', auto_now_add=True, db_index=True, blank=True, null=True
-    )    
+        'Дата добавления', auto_now_add=True,
+        db_index=True, blank=True, null=True
+    )
 
     def __str__(self):
         return self.name

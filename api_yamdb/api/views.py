@@ -7,7 +7,6 @@ from api.serializers import (CategorySerializer, CommentSerializer,
                              UserSignUpSerializer)
 from django import views
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import BadRequest
 from django.core.mail import send_mail
