@@ -1,20 +1,30 @@
-from api.custom_viewsets import (CreateReadDeleteModelViewSet,
-                                 CreateReadUpdateDeleteModelViewset)
-from api.serializers import (CategorySerializer, CommentSerializer,
-                             GenreSerializer, ReviewSerializer,
-                             TitlePostSerializer, TitleSerializer)
-from django import views
 from django.core.exceptions import BadRequest
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, views, viewsets
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework import filters, viewsets
+from rest_framework.permissions import (
+    IsAuthenticatedOrReadOnly
+)
+
+from api.custom_viewsets import (
+    CreateReadDeleteModelViewSet,
+    CreateReadUpdateDeleteModelViewset
+)
+from api.serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitlePostSerializer,
+    TitleSerializer,
+)
 from reviews.models import Category, Genre, Review, Title
 
 from .filters import TitleFilter
-from .permissions import (AdminOrReadOnly, AuthorAdminModeratorPermission,
-                          IsAdmin, IsSuperUser)
+from .permissions import (
+    AdminOrReadOnly,
+    AuthorAdminModeratorPermission,
+)
 
 
 class CategoryViewSet(CreateReadDeleteModelViewSet):
@@ -23,9 +33,9 @@ class CategoryViewSet(CreateReadDeleteModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = [
+    permission_classes = (
         AdminOrReadOnly,
-    ]
+    )
 
 
 class GenreViewSet(CreateReadDeleteModelViewSet):
@@ -40,6 +50,12 @@ class GenreViewSet(CreateReadDeleteModelViewSet):
 
 
 class TitleViewSet(CreateReadUpdateDeleteModelViewset):
+    http_method_names = (
+        "get",
+        "post",
+        "patch",
+        "delete",
+    )
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
