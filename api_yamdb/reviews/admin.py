@@ -27,7 +27,7 @@ class TitleAdmin(admin.ModelAdmin):
 
 class TitleGenreAdmin(admin.ModelAdmin):
     list_display = ('title', 'genre') 
-    search_fields = ('title', 'genre')   
+    search_fields = ('title__name', 'genre__name')   
 
 
 admin.site.register(User, UserAdmin)
