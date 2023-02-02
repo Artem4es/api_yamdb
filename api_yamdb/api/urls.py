@@ -5,10 +5,13 @@ from api.views import (
     CategoryViewSet,
     GenreViewSet,
     TitleViewSet,
+    CommentViewSet,
+    ReviewViewSet
+)
+
+from users.views import (
     SignUpView,
     TokenView,
-    CommentViewSet,
-    ReviewViewSet,
     UsersViewSet
 )
 

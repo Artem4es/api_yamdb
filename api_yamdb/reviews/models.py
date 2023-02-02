@@ -7,6 +7,8 @@ from django.core.validators import (
 )
 from django.db import models
 
+from users.models import User
+
 
 class Category(models.Model):
     name = models.CharField(
