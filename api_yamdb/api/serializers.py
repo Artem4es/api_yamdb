@@ -1,12 +1,12 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db.models import Avg
+from rest_framework import serializers
 
 from reviews.models import Comment, Review, Category, Genre, Title
 
 
-User = get_user_model()
+from reviews.models import User
 
 
 class UserSignUpSerializer(serializers.Serializer):
@@ -142,7 +142,7 @@ class TitlePostSerializer(serializers.ModelSerializer):
         slug_field='slug', queryset=Category.objects.all()
     )
 
-    def get_rating(self, obj):  # возможно лишняя
+    def get_rating(self, obj):
         rating = Review.objects.filter(title=obj).aggregate(Avg('score'))
         return rating['score__avg']
 

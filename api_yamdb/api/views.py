@@ -25,7 +25,7 @@ from .filters import TitleFilter
 from .permissions import (AdminOrReadOnly, AuthorAdminModeratorPermission,
                           IsAdmin, IsSuperUser)
 
-User = get_user_model()
+from reviews.models import User
 
 
 class CategoryViewSet(CreateReadDeleteModelViewSet):
@@ -94,7 +94,6 @@ class TokenView(views.APIView):
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
-        # confirmation_code = serializer.validated_data['confirmation_code']
         user = get_object_or_404(User, username=username)
         if default_token_generator.check_token(
                 user, serializer.validated_data['confirmation_code']

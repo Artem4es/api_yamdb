@@ -12,6 +12,7 @@ from api.views import (
     UsersViewSet
 )
 
+app_name = 'api'
 
 v1_router = DefaultRouter()
 v1_router.register(r'users', UsersViewSet, basename='users')
@@ -26,8 +27,6 @@ v1_router.register(
     CommentViewSet,
     basename='comments',
 )
-
-app_name = 'api'
 
 auth_patterns = [
     path('signup/', SignUpView.as_view()),

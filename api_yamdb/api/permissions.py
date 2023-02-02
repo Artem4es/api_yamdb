@@ -1,7 +1,4 @@
-from django.contrib.auth import get_user_model
 from rest_framework.permissions import SAFE_METHODS, BasePermission
-
-User = get_user_model()
 
 
 class AdminOrReadOnly(BasePermission):

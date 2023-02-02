@@ -30,4 +30,4 @@ class CreateReadUpdateDeleteModelViewset(
         "post",
         "patch",
         "delete",
-    ]  # еще есть head, trace, options
+    ]
