@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import Category, Comment, Genre, User, Review, Title, TitleGenre
+from .models import Category, Comment, Genre, Review, Title, TitleGenre
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -36,7 +36,6 @@ class TitleGenreAdmin(admin.ModelAdmin):
     search_fields = ('title__name', 'genre__name')
 
 
-admin.site.register(User, UserAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Genre, GenreAdmin)
