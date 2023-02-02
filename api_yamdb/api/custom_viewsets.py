@@ -24,4 +24,3 @@ class CreateReadUpdateDeleteModelViewset(
     UpdateModelMixin,
 ):
     """Get insatnces or instance, create, update, delete"""
-
