@@ -17,7 +17,6 @@ from .serializers import (
 )
 
 from api.permissions import (
-    AuthorAdminModeratorPermission,
     IsAdmin,
     IsSuperUser
 )
