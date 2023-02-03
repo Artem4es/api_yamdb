@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import filters, status, views, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (AllowAny, IsAuthenticated)
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
@@ -17,7 +17,6 @@ from .serializers import (
 )
 
 from api.v1.permissions import (
-    AuthorAdminModeratorPermission,
     IsAdmin,
     IsSuperUser
 )
@@ -66,10 +65,10 @@ class UsersViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=username',)
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    http_method_names = ('get', 'post', 'patch', 'delete')
 
     @action(
-        methods=['PATCH', 'GET'],
+        methods=('PATCH', 'GET'),
         detail=False,
         permission_classes=[IsAuthenticated],
         url_path='me',
