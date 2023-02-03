@@ -33,9 +33,7 @@ class CategoryViewSet(CreateReadDeleteModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = (
-        AdminOrReadOnly,
-    )
+    permission_classes = (AdminOrReadOnly,)
 
 
 class GenreViewSet(CreateReadDeleteModelViewSet):
@@ -44,9 +42,7 @@ class GenreViewSet(CreateReadDeleteModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = [
-        AdminOrReadOnly,
-    ]
+    permission_classes = (AdminOrReadOnly,)
 
 
 class TitleViewSet(CreateReadUpdateDeleteModelViewset):
@@ -60,9 +56,7 @@ class TitleViewSet(CreateReadUpdateDeleteModelViewset):
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
-    permission_classes = [
-        AdminOrReadOnly,
-    ]
+    permission_classes = (AdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
@@ -72,10 +66,10 @@ class TitleViewSet(CreateReadUpdateDeleteModelViewset):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [
+    permission_classes = (
         AuthorAdminModeratorPermission,
         IsAuthenticatedOrReadOnly,
-    ]
+    )
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -91,10 +85,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [
+    permission_classes = (
         AuthorAdminModeratorPermission,
         IsAuthenticatedOrReadOnly,
-    ]
+    )
 
     def get_queryset(self):
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
