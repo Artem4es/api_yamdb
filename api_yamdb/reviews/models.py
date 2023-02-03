@@ -124,6 +124,8 @@ class Review(models.Model):
 
     class Meta:
         ordering = ('-pub_date',)
+        verbose_name = 'Обзор'
+        verbose_name_plural = 'Обзоры'
         constraints = [
             models.UniqueConstraint(fields=('title', 'author'),
                                     name='unique_review')
@@ -144,3 +146,5 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('-pub_date',)
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'

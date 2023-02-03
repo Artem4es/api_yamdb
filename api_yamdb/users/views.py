@@ -1,28 +1,24 @@
-from django import views
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+
 from rest_framework import filters, status, views, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (AllowAny, IsAuthenticated)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from users.serializers import (TokenSerializer, UserSerializer,
-                             UserSignUpSerializer)
-
-from api.permissions import (AdminOrReadOnly, AuthorAdminModeratorPermission,
-                          IsAdmin, IsSuperUser)
-
 from .models import User
+from .serializers import (TokenSerializer, UserSerializer,
+                          UserSignUpSerializer)
+
+from api.permissions import (AuthorAdminModeratorPermission, IsAdmin,
+                             IsSuperUser)
 
 
 class SignUpView(views.APIView):
-    permission_classes = [
-        AllowAny,
-    ]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = UserSignUpSerializer(data=request.data)
@@ -86,5 +82,4 @@ class UsersViewSet(viewsets.ModelViewSet):
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(role=self.request.user.role)
-            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_200_OK)
