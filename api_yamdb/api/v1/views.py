@@ -5,12 +5,13 @@ from rest_framework import filters, viewsets
 from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly
 )
+from reviews.models import Category, Genre, Review, Title
 
-from api.custom_viewsets import (
+from .custom_viewsets import (
     CreateReadDeleteModelViewSet,
     CreateReadUpdateDeleteModelViewset
 )
-from api.serializers import (
+from .serializers import (
     CategorySerializer,
     CommentSerializer,
     GenreSerializer,
@@ -18,8 +19,6 @@ from api.serializers import (
     TitlePostSerializer,
     TitleSerializer,
 )
-from reviews.models import Category, Genre, Review, Title
-
 from .filters import TitleFilter
 from .permissions import (
     AdminOrReadOnly,
