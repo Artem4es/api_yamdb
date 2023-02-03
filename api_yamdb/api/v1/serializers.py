@@ -26,16 +26,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        lookup_field = 'slug'
-        extra_kwargs = {'url': {'lookup_field': 'slug'}}
         model = Category
         fields = ('name', 'slug')
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        lookup_field = 'slug'
-        extra_kwargs = {'url': {'lookup_field': 'slug'}}
         model = Genre
         fields = ('name', 'slug')
 
