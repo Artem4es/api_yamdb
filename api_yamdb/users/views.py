@@ -10,15 +10,21 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import User
-from .serializers import (TokenSerializer, UserSerializer,
-                          UserSignUpSerializer)
+from .serializers import (
+    TokenSerializer,
+    UserSerializer,
+    UserSignUpSerializer
+)
 
-from api.permissions import (AuthorAdminModeratorPermission, IsAdmin,
-                             IsSuperUser)
+from api.permissions import (
+    AuthorAdminModeratorPermission,
+    IsAdmin,
+    IsSuperUser
+)
 
 
 class SignUpView(views.APIView):
-    permission_classes = [AllowAny]
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         serializer = UserSignUpSerializer(data=request.data)
@@ -36,9 +42,7 @@ class SignUpView(views.APIView):
 
 
 class TokenView(views.APIView):
-    permission_classes = [
-        AllowAny,
-    ]
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
@@ -60,9 +64,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
-    filter_backends = [
-        filters.SearchFilter,
-    ]
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('=username',)
     http_method_names = ['get', 'post', 'patch', 'delete']
 
