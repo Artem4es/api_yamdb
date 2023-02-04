@@ -131,6 +131,9 @@ class Review(models.Model):
                                     name='unique_review')
         ]
 
+    def __str__(self):
+        return self.text        
+
 
 class Comment(models.Model):
     review = models.ForeignKey(
@@ -148,3 +151,6 @@ class Comment(models.Model):
         ordering = ('-pub_date',)
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text
