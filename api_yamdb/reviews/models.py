@@ -1,12 +1,8 @@
 import datetime
 
-from django.core.validators import (
-    validate_slug,
-    MaxValueValidator,
-    MinValueValidator,
-)
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    validate_slug)
 from django.db import models
-
 from users.models import User
 
 
@@ -132,7 +128,7 @@ class Review(models.Model):
         ]
 
     def __str__(self):
-        return self.text        
+        return self.text
 
 
 class Comment(models.Model):
