@@ -1,5 +1,6 @@
 from django.db.models import Avg
 from rest_framework import serializers
+
 from reviews.models import Category, Comment, Genre, Review, Title
 
 
@@ -12,13 +13,14 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'author', 'score', 'pub_date')
         model = Review
 
-    def validate_create(self, data):
+    def validate(self, data):
         user = self.context.get('request').user
         title = self.context.get('view').kwargs.get('title_id')
-        if Review.objects.filter(title=title).filter(author=user).exists():
-            raise serializers.ValidationError(
-                'Второй раз отзыв отправлять нельзя!'
-            )
+        if self.context.get('view').action == 'create':
+            if Review.objects.filter(title=title).filter(author=user).exists():
+                raise serializers.ValidationError(
+                    'Второй раз отзыв отправлять нельзя!'
+                )
         return data
 
 

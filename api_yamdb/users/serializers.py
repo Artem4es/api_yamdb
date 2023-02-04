@@ -5,11 +5,12 @@ from .models import User
 
 
 class UserSignUpSerializer(serializers.Serializer):
-
     username = serializers.CharField(
         required=True,
         max_length=150,
-        validators=[UnicodeUsernameValidator(), ]
+        validators=[
+            UnicodeUsernameValidator(),
+        ],
     )
     email = serializers.EmailField(
         required=True,
@@ -56,9 +57,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserIsMeSerializer(UserSerializer):
-
     class Meta(UserSerializer.Meta):
-        read_only_fields = ('role', )
+        read_only_fields = ('role',)
 
 
 class TokenSerializer(serializers.Serializer):

@@ -1,17 +1,23 @@
-from django.core.exceptions import BadRequest
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from reviews.models import Category, Genre, Review, Title
 
-from .custom_viewsets import (CreateReadDeleteModelViewSet,
-                              CreateReadUpdateDeleteModelViewset)
+from reviews.models import Category, Genre, Review, Title
+from .custom_viewsets import (
+    CreateReadDeleteModelViewSet,
+    CreateReadUpdateDeleteModelViewset,
+)
 from .filters import TitleFilter
 from .permissions import AdminOrReadOnly, AuthorAdminModeratorPermission
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer,
-                          TitlePostSerializer, TitleSerializer)
+from .serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitlePostSerializer,
+    TitleSerializer,
+)
 
 
 class CategoryViewSet(CreateReadDeleteModelViewSet):
@@ -65,8 +71,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
-        if Review.objects.filter(title=title).filter(author=user).exists():
-            raise BadRequest('Второй раз отзыв отправлять нельзя!')
         if serializer.is_valid():
             serializer.save(author=user, title=title)
 

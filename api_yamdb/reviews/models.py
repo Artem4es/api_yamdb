@@ -1,8 +1,12 @@
 import datetime
 
-from django.core.validators import (MaxValueValidator, MinValueValidator,
-                                    validate_slug)
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+    validate_slug,
+)
 from django.db import models
+
 from users.models import User
 
 
@@ -69,8 +73,11 @@ class Title(models.Model):
         blank=False,
     )
     pub_date = models.DateTimeField(
-        'Дата добавления', auto_now_add=True,
-        db_index=True, blank=True, null=True
+        'Дата добавления',
+        auto_now_add=True,
+        db_index=True,
+        blank=True,
+        null=True,
     )
 
     class Meta:
@@ -84,14 +91,10 @@ class Title(models.Model):
 
 class TitleGenre(models.Model):
     title = models.ForeignKey(
-        Title,
-        verbose_name='Произведение',
-        on_delete=models.CASCADE
+        Title, verbose_name='Произведение', on_delete=models.CASCADE
     )
     genre = models.ForeignKey(
-        Genre,
-        verbose_name='Жанр',
-        on_delete=models.CASCADE
+        Genre, verbose_name='Жанр', on_delete=models.CASCADE
     )
 
     class Meta:
@@ -123,8 +126,9 @@ class Review(models.Model):
         verbose_name = 'Обзор'
         verbose_name_plural = 'Обзоры'
         constraints = [
-            models.UniqueConstraint(fields=('title', 'author'),
-                                    name='unique_review')
+            models.UniqueConstraint(
+                fields=('title', 'author'), name='unique_review'
+            )
         ]
 
     def __str__(self):
