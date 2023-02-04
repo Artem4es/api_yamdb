@@ -22,13 +22,13 @@ class Category(models.Model):
         unique=True,
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         ordering = ('-id',)
+
+    def __str__(self):
+        return self.name
 
 
 class Genre(models.Model):
@@ -43,13 +43,13 @@ class Genre(models.Model):
         unique=True,
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
         ordering = ('-id',)
+
+    def __str__(self):
+        return self.name
 
 
 class Title(models.Model):
@@ -77,13 +77,13 @@ class Title(models.Model):
         db_index=True, blank=True, null=True
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
         ordering = ('-name',)
+
+    def __str__(self):
+        return self.name
 
 
 class TitleGenre(models.Model):
@@ -98,13 +98,13 @@ class TitleGenre(models.Model):
         on_delete=models.CASCADE
     )
 
-    def __str__(self):
-        return f'{self.title} {self.genre}'
-
     class Meta:
         verbose_name = 'Произведение/жанр'
         verbose_name_plural = 'Произведения/жанры'
         ordering = ('-title',)
+
+    def __str__(self):
+        return f'{self.title} {self.genre}'
 
 
 class Review(models.Model):

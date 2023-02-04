@@ -15,7 +15,6 @@ from .serializers import (
     UserSerializer,
     UserSignUpSerializer
 )
-
 from api.v1.permissions import (
     IsAdmin,
     IsSuperUser
